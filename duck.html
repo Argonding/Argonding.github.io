@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 设置网站的favicon -->
+    <link rel="icon" href="figures/duck/小pt-2.jpg" sizes="144x144" type="image/jpg">
+    <title>游禽/涉禽/走禽图鉴</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        body{
+            background: url("figures/qinghai_lake_2.jpg") no-repeat center center fixed;
+            /*兼容浏览器版本*/
+            -webkit-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            color: white;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        .search-container {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        #search {
+            width: 60%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 16px;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .duck-item {
+            display: flex;
+            background-color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .duck-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .duck-image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        
+        .duck-info {
+            padding: 15px 20px;
+            flex-grow: 1;
+        }
+        
+        .duck-name {
+            color: #2980b9;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .duck-description {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .no-results {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 18px;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>游禽/涉禽/走禽图鉴</h1>
+    
+    <div class="search-container">
+        <input type="text" id="search" placeholder="搜索小鸟名称或描述...">
+    </div>
+    
+    <div id="duck-container">
+        <!-- 示例水鸟条目1 -->
+        <div class="duck-item">
+            <img src="figures/duck/绿头鸭.jpg" alt="绿头鸭" class="duck-image">
+            <div class="duck-info">
+                <div class="duck-name">绿头鸭</div>
+                <div class="duck-description">
+                    绿头鸭是最常见的野鸭之一，雄鸟头部呈金属绿色，颈部有白色环纹。广泛分布于北半球，是许多家鸭的祖先。栖息于淡水湖泊、河流和沼泽地带，杂食性，以水生植物、种子和小型水生动物为食。
+                </div>
+            </div>
+        </div>
+        
+        <!-- 示例水鸟条目2 -->
+        <div class="duck-item">
+            <img src="https://example.com/duck2.jpg" alt="白鹭" class="duck-image">
+            <div class="duck-info">
+                <div class="duck-name">白鹭</div>
+                <div class="duck-description">
+                    白鹭是一种中型涉禽，全身羽毛洁白，喙和腿黑色，趾黄色。常见于湿地、稻田和浅水区域。以小鱼、蛙类、昆虫等为食。繁殖期头后会长出细长的饰羽，姿态优雅，常被用作环境质量的指示物种。
+                </div>
+            </div>
+        </div>
+        
+        <!-- 示例水鸟条目3 -->
+        <div class="duck-item">
+            <img src="https://example.com/duck3.jpg" alt="黑天鹅" class="duck-image">
+            <div class="duck-info">
+                <div class="duck-name">黑天鹅</div>
+                <div class="duck-description">
+                    黑天鹅原产于澳大利亚，全身羽毛黑色，喙红色并有白色横纹。体型优美，颈部长而弯曲。主要栖息于淡水湖泊和沼泽地带。以水生植物和水草为食。黑天鹅实行一夫一妻制，夫妻关系通常维持终生。
+                </div>
+            </div>
+        </div>
+        
+        <!-- 可以继续添加更多水鸟条目 -->
+    </div>
+    
+    <script>
+        document.getElementById('search').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const duckItems = document.querySelectorAll('.duck-item');
+            let hasResults = false;
+            
+            duckItems.forEach(item => {
+                const name = item.querySelector('.duck-name').textContent.toLowerCase();
+                const description = item.querySelector('.duck-description').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                    hasResults = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // 如果没有搜索结果，显示提示信息
+            const noResults = document.getElementById('no-results');
+            if (!hasResults) {
+                if (!noResults) {
+                    const noResultsDiv = document.createElement('div');
+                    noResultsDiv.id = 'no-results';
+                    noResultsDiv.className = 'no-results';
+                    noResultsDiv.textContent = '没有找到匹配的小鸟，请尝试其他关键词。';
+                    document.getElementById('duck-container').appendChild(noResultsDiv);
+                }
+            } else if (noResults) {
+                noResults.remove();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset = 'utf-8'>
+    <title>首页</title>
+
+    <!--设置网站的favicon-->
+    <link rel="icon" href= "figures/logo.jpg" sizes="144x144" type="image/jpg">
+
+    <!--设置每段前面缩进2em，段落上下间距为20px，左右为0；网站背景为青海湖,并设置文字颜色为白色-->
+    <style>
+        p {margin: 15px 2px;} 
+        p{text-indent: 2em;}
+    </style>
+    <style type="text/css">
+        body{
+            background: url("figures/qinghai_lake.jpg") no-repeat center center fixed;
+                    /*兼容浏览器版本*/
+                    -webkit-background-size: cover;
+                    -o-background-size: cover;                
+                    background-size: cover;
+                    color: white; 
+        }
+        </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body onload="setActive()">
+    <nav class="navbar">
+        <div class="navbar-title">Argonding's page</div>
+        <ul>
+            <li><a id="nav-index" href="index.html">首页</a></li>
+            <li class="dropdown">
+                <a id="nav-photography" href="photography.html">影集</a>
+                <div class="dropdown-content">
+                    <a href="Qilian_fieldtrip.html">祁连: 八千里路</a>
+                    <a href="#">城市建筑</a>
+                    <a href="#">人物肖像</a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a id="nav-bird" href="bird.html">观鸟笔记</a>
+                <div class="dropdown-content">
+                    <a href="duck.html">涉禽/陆禽</a>
+                    <a href="songbird.html">鸣禽/攀禽</a>
+                    <a href="eagle.html">猛禽</a>
+                </div>
+            </li>
+            <li><a id="nav-about" href="about.html">关于</a></li>
+        </ul>
+    </nav>
+
+    <main id="app-container" style="padding: 20px;">
+        <h1>欢迎来到皮大嘎的主页！</h1>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

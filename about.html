@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset = 'utf-8'>
+<title>关于</title>
+<!--设置网站的favicon-->
+<link rel="icon" href= "figures/Oriental_Skylark_acessed.jpg" sizes="144x144" type="image/jpg">
+<!--设置每段前面缩进2em，段落上下间距为20px，左右为0；网站背景为青海湖,并设置文字颜色为白色-->
+<style>
+p {margin: 15px 2px;}
+p{text-indent: 2em;}
+</style>
+<style type="text/css">
+body{
+background: url("figures/cloud.jpg") no-repeat center center fixed;
+/*兼容浏览器版本*/
+-webkit-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+color: white;
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+
+
+<body onload="setActive()">
+<nav class="navbar">
+<div class="navbar-title">Argonding's page</div>
+<ul>
+<li><a id="nav-index" href="index.html">首页</a></li>
+<li class="dropdown">
+<a id="nav-photography" href="photography.html">影集</a>
+<div class="dropdown-content">
+<a href="Qilian_fieldtrip.html">祁连: 八千里路</a>
+<a href="#">城市建筑</a>
+<a href="#">人物肖像</a>
+</div>
+</li>
+<li class="dropdown">
+<a id="nav-bird" href="bird.html">观鸟笔记</a>
+<div class="dropdown-content">
+    <a href="duck.html">涉禽/陆禽</a>
+    <a href="songbird.html">鸣禽/攀禽</a>
+    <a href="eagle.html">猛禽</a>
+</div>
+</li>
+<li><a id="nav-about" href="about.html">关于</a></li>
+</ul>
+</nav>
+
+<main style="padding: 20px;">
+<h1>关于</h1>
+<p>这里是皮大嘎的Personal Page。</p>
+<h2>关于作者本人</h2>
+<h3>教育经历</h3>
+<P>
+2019-2022: 湖北襄阳四中
+</P>
+<P>
+2022-至今：北京大学地球与空间科学学院，地球化学专业
+</P>
+<p>
+我最近的工作聚焦于Dzieduszyckia（腕足动物门，小嘴贝目）的壳体及其同位素生命效应（"Vital Effect"），以及其保存状态、种群演化等。
+</p>
+<h3>兴趣爱好</h3>
+<p>
+<a href = "https://500px.com.cn/Argondinghome" target="_blank">摄影</a>
+/ 观鸟
+/ 旅行
+</p>
+
+<h2>关于本网站</h2>
+<p>
+本网站自2025年1月25日正式以初版形式上线，后续将结合CSS和JavaScript进行美化工作并添加更多内容。一切都在不断更新的路上~
+</p>
+<b>联系方式</b>：Argonding@outlook.com
+<br>
+<b>开发环境</b>：vscode & github
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
