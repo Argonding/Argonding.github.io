@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>鸟调记录 - 20260526</title>
+    <link rel="icon" href="../figures/logo.jpg" sizes="144x144" type="image/jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style.css">
+
+    <style>
+        /* ========== 背景与基础 ========== */
+        body {
+            background: url("../figures/qinghai_lake.jpg") no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .page-content {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px 24px 40px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .page-content.loaded {
+            opacity: 1;
+        }
+
+        .breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .breadcrumb a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+        }
+        .breadcrumb a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .breadcrumb .sep {
+            color: rgba(255,255,255,0.5);
+            user-select: none;
+        }
+        .breadcrumb .current {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .header-card {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 24px 28px;
+            margin-bottom: 28px;
+            color: #1a1a1a;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.1);
+        }
+        .header-card .record-date {
+            font-size: 0.9rem;
+            color: #666;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .header-card .record-location {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 10px;
+        }
+        .header-card .record-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 8px;
+        }
+        .header-card .record-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(0,0,0,0.05);
+            padding: 5px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+        .header-card .record-notes {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            font-size: 0.95rem;
+            color: #444;
+            line-height: 1.7;
+        }
+
+        .gallery-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .gallery-info .count {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+        .gallery-info .hint {
+            font-size: 0.8rem;
+            opacity: 0.6;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .photo-card {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(6px);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        .photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            background: rgba(255,255,255,0.9);
+        }
+        .photo-card .img-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            background: rgba(0,0,0,0.08);
+        }
+        .photo-card .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s;
+        }
+        .photo-card:hover .img-wrapper img {
+            transform: scale(1.04);
+        }
+        .photo-card .zoom-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .photo-card:hover .zoom-icon {
+            opacity: 1;
+        }
+        .photo-card .caption {
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            color: #444;
+            line-height: 1.4;
+            min-height: 20px;
+        }
+        .photo-card .caption:empty {
+            display: none;
+        }
+        .photo-card .caption .species-tag {
+            display: inline-block;
+            background: #e8f4e8;
+            color: #2e7d32;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .photo-card.featured {
+            grid-column: span 2;
+        }
+        .photo-card.featured .img-wrapper {
+            aspect-ratio: 16 / 9;
+        }
+        @media (max-width: 600px) {
+            .photo-card.featured {
+                grid-column: span 1;
+            }
+            .photo-card.featured .img-wrapper {
+                aspect-ratio: 4 / 3;
+            }
+        }
+
+        .back-link-wrap {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .back-link {
+            display: inline-block;
+            padding: 10px 24px;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s;
+            font-size: 0.95rem;
+            backdrop-filter: blur(4px);
+        }
+        .back-link:hover {
+            background: rgba(255,255,255,0.35);
+        }
+
+        /* 灯箱样式（与之前相同，略...，您可复用原模板的完整灯箱CSS） */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .lightbox-overlay.active {
+            display: flex;
+        }
+        .lightbox-img-wrap {
+            position: relative;
+            max-width: 92vw;
+            max-height: 78vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lightbox-overlay img {
+            max-width: 92vw;
+            max-height: 78vh;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+            user-select: none;
+        }
+        .lightbox-caption {
+            color: #ddd;
+            margin-top: 14px;
+            font-size: 0.95rem;
+            text-align: center;
+            max-width: 80vw;
+            min-height: 22px;
+            padding: 0 16px;
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 16px;
+            right: 22px;
+            z-index: 10001;
+            width: 42px;
+            height: 42px;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .lightbox-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10001;
+            width: 44px;
+            height: 44px;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lightbox-arrow:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .lightbox-arrow.prev {
+            left: 12px;
+        }
+        .lightbox-arrow.next {
+            right: 12px;
+        }
+        .lightbox-arrow.hidden {
+            display: none;
+        }
+        .lightbox-counter {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+            z-index: 10001;
+            background: rgba(0,0,0,0.4);
+            padding: 4px 14px;
+            border-radius: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .photo-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 10px;
+            }
+            .header-card {
+                padding: 16px 18px;
+            }
+            .header-card .record-location {
+                font-size: 1.5rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .photo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ==================== 导航栏（路径已修正） ==================== -->
+    <nav class="navbar">
+        <div class="navbar-title">Argonding's page</div>
+        <ul>
+            <li><a id="nav-index" href="../index.html">首页</a></li>
+            <li class="dropdown">
+                <a id="nav-photography" href="../photography.html">影集</a>
+                <div class="dropdown-content">
+                    <a href="../Qilian_fieldtrip.html">祁连: 八千里路</a>
+                    <a href="#">城市建筑</a>
+                    <a href="#">人物肖像</a>
+                </div>
+            </li>
+            <li class="dropdown">
+                <a id="nav-bird" href="#">观鸟笔记</a>
+                <div class="dropdown-content">
+                    <a href="../2026birding.html">2026年</a>
+                    <a href="../2025birding.html">2025年</a>
+                    <a href="../2024birding.html">2024年</a>
+                </div>
+            </li>
+            <li><a id="nav-about" href="../about.html">关于</a></li>
+        </ul>
+    </nav>
+
+    <!-- ==================== 主内容区 ==================== -->
+    <div class="page-content" id="pageContent">
+        <div class="breadcrumb">
+            <a href="../index.html">首页</a><span class="sep">›</span>
+            <a href="../2026birding.html">观鸟笔记 · 2026</a><span class="sep">›</span>
+            <span class="current">海淀公园</span>   <!-- 可手动修改地点名 -->
+        </div>
+
+        <!-- ★ 头部信息（仍需手动修改日期、地点等） ★ -->
+        <div class="header-card">
+            <div class="record-date">📅 2026年5月26日 · 星期二</div>
+            <h1 class="record-location">📍 海淀公园</h1>
+            <div class="record-meta">
+                <span>🌤 晴</span>
+                <span>🕐 15:30 ~ 18:30</span>
+                <span>👤 皮大嘎</span>
+            </div>
+            <div class="record-notes">
+                清晨光线柔和，林鸟活跃。记录到灰头绿啄木鸟、黑尾蜡嘴雀、棕头鸦雀等。
+            </div>
+        </div>
+
+        <!-- 图片展示区（由 JS 动态生成） -->
+        <div class="gallery-info">
+            <span class="count">📷 共 <strong id="photoCount">0</strong> 张照片</span>
+            <span class="hint">点击图片可放大查看</span>
+        </div>
+        <div class="photo-grid" id="photoGrid"></div>
+
+        <div class="back-link-wrap">
+            <a href="../2026birding.html" class="back-link">← 返回2026观鸟记录列表</a>
+        </div>
+    </div>
+
+    <!-- 灯箱结构（省略的完整代码请复用之前模板的灯箱HTML） -->
+    <div class="lightbox-overlay" id="lightbox">
+        <button class="lightbox-close" id="lightboxClose" title="关闭 (Esc)">✕</button>
+        <button class="lightbox-arrow prev hidden" id="lightboxPrev">◂</button>
+        <div class="lightbox-img-wrap">
+            <img src="" alt="" id="lightboxImg">
+        </div>
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+        <div class="lightbox-counter" id="lightboxCounter"></div>
+        <button class="lightbox-arrow next hidden" id="lightboxNext">▸</button>
+    </div>
+
+    <!-- ★ 引入自动生成的图片数据 -->
+    <!-- 假设当前页面对应的日期是 20260526，文件名需与日期一致 -->
+    <script src="../data/20260526.js"></script>
+
+    <!-- 全局脚本 -->
+    <script src="../script.js"></script>
+
+    <script>
+        (function() {
+            // ========== 背景加载后淡入 ==========
+            var bgImg = new Image();
+            bgImg.src = "../figures/qinghai_lake.jpg";
+            var contentEl = document.getElementById('pageContent');
+            function showContent() {
+                if (contentEl && !contentEl.classList.contains('loaded')) {
+                    contentEl.classList.add('loaded');
+                }
+            }
+            bgImg.onload = showContent;
+            if (bgImg.complete) showContent();
+            setTimeout(showContent, 2000);
+
+            // ========== 渲染图片网格 ==========
+            var photoGrid = document.getElementById('photoGrid');
+            var photoCountEl = document.getElementById('photoCount');
+
+            // photoList 由引入的 ../data/20260526.js 定义
+            if (typeof photoList === 'undefined') {
+                console.error('未找到 photoList，请检查数据文件是否引入');
+                photoList = [];
+            }
+
+            function renderPhotos() {
+                if (!photoGrid) return;
+                photoGrid.innerHTML = '';
+                photoList.forEach(function(photo) {
+                    var card = document.createElement('div');
+                    card.className = 'photo-card' + (photo.featured ? ' featured' : '');
+                    card.setAttribute('data-full', photo.src);
+                    card.setAttribute('data-caption', photo.caption);
+                    card.innerHTML = 
+                        '<div class="img-wrapper">' +
+                            '<img src="' + photo.thumb + '" alt="' + (photo.alt || '') + '" loading="lazy">' +
+                            '<div class="zoom-icon"></div>' +
+                        '</div>' +
+                        '<div class="caption">' + photo.caption + '</div>';
+                    photoGrid.appendChild(card);
+                });
+                if (photoCountEl) photoCountEl.textContent = photoList.length;
+            }
+
+            renderPhotos();
+
+            // ========== 灯箱逻辑 ==========
+            var lightbox = document.getElementById('lightbox');
+            var lightboxImg = document.getElementById('lightboxImg');
+            var lightboxCaption = document.getElementById('lightboxCaption');
+            var lightboxCounter = document.getElementById('lightboxCounter');
+            var lightboxClose = document.getElementById('lightboxClose');
+            var lightboxPrev = document.getElementById('lightboxPrev');
+            var lightboxNext = document.getElementById('lightboxNext');
+            var currentIndex = -1;
+            var allCards = [];
+
+            function collectCards() {
+                allCards = [];
+                if (!photoGrid) return;
+                var cards = photoGrid.querySelectorAll('.photo-card');
+                cards.forEach(function(card) {
+                    allCards.push({
+                        fullSrc: card.getAttribute('data-full'),
+                        caption: card.getAttribute('data-caption'),
+                        alt: card.querySelector('img') ? card.querySelector('img').alt : ''
+                    });
+                });
+            }
+
+            function openLightbox(index) {
+                collectCards();
+                if (allCards.length === 0) return;
+                currentIndex = index;
+                updateLightboxContent();
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                updateArrows();
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+                currentIndex = -1;
+            }
+
+            function updateLightboxContent() {
+                if (currentIndex < 0 || currentIndex >= allCards.length) return;
+                var data = allCards[currentIndex];
+                lightboxImg.src = data.fullSrc;
+                lightboxImg.alt = data.alt;
+                lightboxCaption.innerHTML = data.caption;
+                lightboxCounter.textContent = (currentIndex + 1) + ' / ' + allCards.length;
+                updateArrows();
+            }
+
+            function updateArrows() {
+                if (allCards.length <= 1) {
+                    lightboxPrev.classList.add('hidden');
+                    lightboxNext.classList.add('hidden');
+                } else {
+                    lightboxPrev.classList.remove('hidden');
+                    lightboxNext.classList.remove('hidden');
+                    if (currentIndex <= 0) lightboxPrev.classList.add('hidden');
+                    if (currentIndex >= allCards.length - 1) lightboxNext.classList.add('hidden');
+                }
+            }
+
+            function prevImage() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    updateLightboxContent();
+                }
+            }
+
+            function nextImage() {
+                if (currentIndex < allCards.length - 1) {
+                    currentIndex++;
+                    updateLightboxContent();
+                }
+            }
+
+            photoGrid.addEventListener('click', function(e) {
+                var card = e.target.closest('.photo-card');
+                if (!card) return;
+                var cardsArray = Array.from(photoGrid.querySelectorAll('.photo-card'));
+                var idx = cardsArray.indexOf(card);
+                if (idx >= 0) openLightbox(idx);
+            });
+
+            lightboxClose.addEventListener('click', closeLightbox);
+            lightbox.addEventListener('click', function(e) {
+                if (e.target === lightbox) closeLightbox();
+            });
+            lightboxPrev.addEventListener('click', function(e) { e.stopPropagation(); prevImage(); });
+            lightboxNext.addEventListener('click', function(e) { e.stopPropagation(); nextImage(); });
+
+            document.addEventListener('keydown', function(e) {
+                if (!lightbox.classList.contains('active')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') prevImage();
+                if (e.key === 'ArrowRight') nextImage();
+            });
+
+            var touchStartX = 0;
+            lightbox.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {passive: true});
+            lightbox.addEventListener('touchend', function(e) {
+                var diff = touchStartX - e.changedTouches[0].screenX;
+                if (Math.abs(diff) > 60) {
+                    diff > 0 ? nextImage() : prevImage();
+                }
+            }, {passive: true});
+
+            // ========== 导航高亮强制修正 ==========
+            window.addEventListener('load', function() {
+                document.querySelectorAll('.navbar a, .navbar li.dropdown').forEach(function(el) {
+                    el.classList.remove('active');
+                });
+                var birdLink = document.getElementById('nav-bird');
+                if (birdLink) {
+                    birdLink.classList.add('active');
+                    var parentLi = birdLink.closest('li.dropdown');
+                    if (parentLi) parentLi.classList.add('active');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
